@@ -1,0 +1,11 @@
+aiohttp
+discord.py
+discord.py[voice]
+gtts
+langdetect
+python-dotenv
+pyttsx3
+PyYAML
+Requests
+openai
+duckduckgo-search
