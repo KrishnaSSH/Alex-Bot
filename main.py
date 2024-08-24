@@ -18,6 +18,7 @@ class AIBot(commands.AutoShardedBot):
             super().__init__(shard_count=1, *args, **kwargs)
 
     async def setup_hook(self) -> None:
+        # Load cogs
         for cog in COMMANDS:
             cog_name = cog.split('.')[-1]
             discord.client._log.info(f"Loaded Command {cog_name}")
@@ -26,9 +27,24 @@ class AIBot(commands.AutoShardedBot):
             cog_name = cog.split('.')[-1]
             discord.client._log.info(f"Loaded Event Handler {cog_name}")
             await self.load_extension(f"{cog}")
+        
+        # Define command with integration_types and contexts
+        @bot.tree.command()
+        async def ping(interaction: discord.Interaction, hide: bool = False):
+            """Replies with the bot's current ping."""
+            await interaction.response.send_message(
+                f'Pong! {round(bot.latency * 1000)}ms', ephemeral=hide
+            )
+        
+        # Adding integration types and contexts
+        ping_command = bot.tree.get_command("ping")
+        if ping_command:
+            ping_command.integration_types = [0, 1]
+            ping_command.contexts = [0, 1, 2]
+
         print('If syncing commands is taking longer than usual you are being ratelimited')
-        await self.tree.sync()
-        discord.client._log.info(f"Loaded {len(self.commands)} commands")
+        await self.tree.sync()  # Syncing commands globally
+        discord.client._log.info(f"Loaded {len(self.tree.get_commands())} global commands")
 
 bot = AIBot(command_prefix=[], intents=discord.Intents.all(), help_command=None)
 
